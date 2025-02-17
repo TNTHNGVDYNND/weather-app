@@ -9,12 +9,18 @@ const getWeather = async (city, unit = "metric") => {
   }
 
   const apiKey = process.env.KEY;
+  if (!apiKey) {
+    throw new Error("API key is missing. Please set it in your .env file.");
+  }
+
   const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=${unit}`;
 
   try {
     const response = await fetch(apiUrl);
     if (!response.ok) {
-      throw new Error("City not found or invalid API request");
+      throw new Error(
+        `City not found or invalid API request: ${response.statusText}`
+      );
     }
     const data = await response.json();
 
@@ -35,7 +41,8 @@ const getWeather = async (city, unit = "metric") => {
       pressure: `${data.main.pressure} hPa`,
     };
   } catch (error) {
-    throw new Error(error.message);
+    console.error("Failed to fetch weather data:", error.message);
+    throw new Error("Failed to fetch weather data");
   }
 };
 
